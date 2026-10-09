@@ -57,7 +57,7 @@ test.describe('Automation Exercise approved customer workflows', () => {
     await expect(productsPage.productCard('Blue Top')).toContainText('Rs. 500');
     await productsPage.openProduct('Blue Top');
     await expect(page.getByRole('heading', { name: 'Blue Top', exact: true })).toBeVisible();
-    await expect(page.getByText('Rs. 699', { exact: true })).toBeVisible();
+    await expect(page.getByText('Rs. 500', { exact: true })).toBeVisible();
   });
 
   test('TC-DETAIL-002 — Add a product with default quantity', async ({ page }) => {
