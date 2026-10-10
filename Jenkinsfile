@@ -20,7 +20,7 @@ pipeline {
 
         // Keep the latest 20 builds and their archived reports.
         buildDiscarder(logRotator(numToKeepStr: '20'))
-        
+
         // Disable Jenkins's automatic checkout because we perform
         // checkout explicitly in the Checkout stage below.
         skipDefaultCheckout(true)
@@ -48,17 +48,18 @@ pipeline {
     stages {
 
         stage('Checkout') {
-            steps {
+    steps {
+        // Clean this job's workspace, then download its GitHub code.
+        deleteDir()
+        checkout scm
 
-                // Remove old files from this job's allocated workspace.
-                // This does not delete your separate local project folder.
-                deleteDir()
-
-                // Download the code using the repository, branch, and
-                // credentials configured under "Pipeline script from SCM."
-                checkout scm
-            }
+        script {
+            // Create an image tag using the job name and build number.
+            // Replace characters that Docker tags cannot contain.
+            env.IMAGE_TAG = env.BUILD_TAG.replaceAll('[^a-zA-Z0-9_.-]', '-')
         }
+    }
+}
 
         stage('Build Docker Image') {
             steps {
@@ -67,7 +68,7 @@ pipeline {
                 // in the current workspace.
                 // Example image tag: playwright-agentic-qa-jenkins:6
                 // BUILD_NUMBER is supplied automatically by Jenkins.
-                sh 'docker build -t "$IMAGE_NAME:$BUILD_NUMBER" .'
+                sh 'docker build -t "$IMAGE_NAME:$IMAGE_TAG" .'
             }
         }
 
@@ -105,7 +106,7 @@ pipeline {
                       --env PLAYWRIGHT_HTML_OPEN=never \
                       --mount "type=bind,source=$PWD/playwright-report,target=/app/playwright-report" \
                       --mount "type=bind,source=$PWD/test-results,target=/app/test-results" \
-                      "$IMAGE_NAME:$BUILD_NUMBER" \
+                      "$IMAGE_NAME:$IMAGE_TAG" \
                       npx playwright test tests/automationexercise-approved-workflows.spec.ts \
                       --project=chromium \
                       --workers=1 \
@@ -136,6 +137,8 @@ pipeline {
 
             // Allows conditional Groovy logic inside this pipeline.
             script {
+
+                
 
                 // If the JUnit XML exists, publish its test results.
                 if (fileExists('test-results/junit.xml')) {
