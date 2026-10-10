@@ -9,6 +9,7 @@ pipeline {
     triggers {
 
         // Check GitHub roughly every two minutes.
+        // Check GitHub for new commits every two minutes.
         // Start a build only when new changes are detected.
         // H distributes the checking times between different jobs.
         pollSCM('H/2 * * * *')
