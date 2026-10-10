@@ -18,6 +18,9 @@ pipeline {
     // Controls how the pipeline executes.
     options {
 
+        // Keep the latest 20 builds and their archived reports.
+        buildDiscarder(logRotator(numToKeepStr: '20'))
+        
         // Disable Jenkins's automatic checkout because we perform
         // checkout explicitly in the Checkout stage below.
         skipDefaultCheckout(true)
