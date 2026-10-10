@@ -4,5 +4,23 @@ node_modules/
 /test-results/
 /playwright-report/
 /blob-report/
+/traces/
+*.trace
 /playwright/.cache/
 /playwright/.auth/
+
+# Local environment and secrets
+.env
+.env.*
+!.env.example
+/secrets/
+/.secrets/
+*.pem
+*.key
+
+# Local Docker test outputs
+/docker-reports/
+/docker-test-results/
+/docker-first-run-report/
+/docker-failure-reports/
+.DS_Store
